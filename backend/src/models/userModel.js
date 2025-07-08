@@ -30,6 +30,8 @@ const userSchema = new mongoose.Schema(
     profileImage: {
       type: String,
     },
+    friends: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    friendRequests: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
 
     passwordChangedAt: Date,
     passwordResetToken: String,

@@ -3,11 +3,11 @@ const path = require("path");
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "src/public/user");
+    cb(null, "src/public/images");
   },
   filename: (req, file, cb) => {
     const ext = path.extname(file.originalname);
-    cb(null, `user-${Date.now()}${ext}`);
+    cb(null, `postImage-${Date.now()}${ext}`);
   },
 });
 

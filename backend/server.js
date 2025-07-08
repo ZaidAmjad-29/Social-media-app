@@ -13,6 +13,7 @@ const port = process.env.PORT || 5001;
 connectDB();
 
 app.use("/public", express.static(path.join(__dirname, "/src/public")));
+app.use("/public", express.static(path.join(__dirname, "public")));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors());
