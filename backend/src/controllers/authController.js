@@ -1,7 +1,8 @@
 const User = require("../models/userModel");
-const { createToken } = require("../utils/createJwtToken");
 const sendMail = require("../utils/email");
 const crypto = require("crypto");
+const catchAsync = require("../utils/catchAsync");
+const { createToken } = require("../utils/createJwtToken");
 
 exports.getAllUsers = async (req, res, next) => {
   const user = req.userId;
@@ -11,27 +12,35 @@ exports.getAllUsers = async (req, res, next) => {
   res.status(200).json({ status: true, message: "Data found", data: users });
 };
 
-exports.register = async (req, res) => {
-  try {
-    const newUser = await User.create({
-      name: req.body.name,
-      email: req.body.email,
-      password: req.body.password,
-    });
+exports.register = catchAsync(async (req, res, next) => {
+  const { name, email, password, bio } = req.body;
 
-    const token = createToken(newUser._id);
-
-    res
-      .status(201)
-      .json({
-        status: true,
-        message: "User created succedssfully",
-        data: { user: newUser, token: token },
-      });
-  } catch (err) {
-    res.status(500).json({ status: false, message: err.message });
+  let profileImagePath = "";
+  if (req.file) {
+    profileImagePath = `/public/user/${req.file.filename}`;
+  } else {
+    profileImagePath = "/public/user/default.png";
   }
-};
+
+  const newUser = await User.create({
+    name,
+    email,
+    password,
+    bio,
+    profileImage: profileImagePath,
+  });
+
+  const token = createToken(newUser._id);
+
+  res.status(201).json({
+    status: true,
+    message: "User registered successfully",
+    data: {
+      user: newUser,
+      token,
+    },
+  });
+});
 
 exports.login = async (req, res, next) => {
   try {
@@ -61,13 +70,11 @@ exports.login = async (req, res, next) => {
 
     const token = createToken(user._id);
 
-    res
-      .status(200)
-      .json({
-        status: true,
-        message: "Logged in Successfully",
-        data: { user: user, token: token },
-      });
+    res.status(200).json({
+      status: true,
+      message: "Logged in Successfully",
+      data: { user: user, token: token },
+    });
   } catch (error) {
     console.log(error.message);
   }
@@ -151,49 +158,47 @@ exports.resetPassword = async (req, res, next) => {
 
     const token = createToken(user._id);
 
-    res
-      .status(200)
-      .json({
-        status: true,
-        message: "Logged in Successfully",
-        data: { user: user, token: token },
-      });
+    res.status(200).json({
+      status: true,
+      message: "Logged in Successfully",
+      data: { user: user, token: token },
+    });
   } catch (err) {
     console.log(err.message);
   }
 };
 
 exports.updatePassword = async (req, res, next) => {
-    try {
-      const user = await User.findById(req.user._id).select('+password');
-  
-      if (!user) {
-        return res.status(404).json({ status: false, message: "User not found" });
-      }
-  
-      const isPasswordMatched = await user.checkPassword(
-        req.body.currentPassword,
-        user.password
-      );
-  
-      if (!isPasswordMatched) {
-        return res.status(401).json({ status: false, message: "Invalid current password" });
-      }
-  
-      user.password = req.body.newPassword;
-      await user.save();
-  
-      const token = createToken(user._id);
-  
-      res.status(200).json({
-        status: true,
-        message: "Password updated successfully",
-        data: { user, token }
-      });
-  
-    } catch (error) {
-      console.error("Update password error:", error.message);
-      res.status(500).json({ status: false, message: "Internal server error" });
+  try {
+    const user = await User.findById(req.user._id).select("+password");
+
+    if (!user) {
+      return res.status(404).json({ status: false, message: "User not found" });
     }
-  };
-  
+
+    const isPasswordMatched = await user.checkPassword(
+      req.body.currentPassword,
+      user.password
+    );
+
+    if (!isPasswordMatched) {
+      return res
+        .status(401)
+        .json({ status: false, message: "Invalid current password" });
+    }
+
+    user.password = req.body.newPassword;
+    await user.save();
+
+    const token = createToken(user._id);
+
+    res.status(200).json({
+      status: true,
+      message: "Password updated successfully",
+      data: { user, token },
+    });
+  } catch (error) {
+    console.error("Update password error:", error.message);
+    res.status(500).json({ status: false, message: "Internal server error" });
+  }
+};

@@ -22,6 +22,15 @@ const userSchema = new mongoose.Schema(
       required: true,
       minlength: [8, "password minimum length is 8 characters"],
     },
+    bio: {
+      type: String,
+      default: "",
+    },
+
+    profileImage: {
+      type: String,
+    },
+
     passwordChangedAt: Date,
     passwordResetToken: String,
     passwordResetTokenExpires: Date,
