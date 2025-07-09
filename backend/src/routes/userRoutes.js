@@ -1,6 +1,6 @@
-
 const express = require("express");
 const jwtFilter = require("../middlewares/requestFilter");
+
 
 const {
   register,
@@ -9,6 +9,7 @@ const {
   forgotPassword,
   resetPassword,
   updatePassword,
+  getMe,
 } = require("../controllers/authController");
 
 const upload = require("../utils/multer");
@@ -29,5 +30,7 @@ router.route("/user/reset-password/:token").patch(resetPassword);
 router
   .route("/user/update-password")
   .patch(jwtFilter.checkRequest, updatePassword);
+
+router.get("/user/me", jwtFilter.checkRequest, getMe);
 
 module.exports = router;

@@ -11,6 +11,11 @@ router.post(
   upload.single("imageUrl"),
   postController.createPost
 );
+router.post(
+  "/post/:id/like",
+  jwtFilter.checkRequest,
+  postController.likeAndUnlinkPost
+);
 router.get("/posts", jwtFilter.checkRequest, postController.getAllPosts);
 router.delete("/post/:id", jwtFilter.checkRequest, postController.deletePost);
 

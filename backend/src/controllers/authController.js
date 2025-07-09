@@ -202,3 +202,19 @@ exports.updatePassword = async (req, res, next) => {
     res.status(500).json({ status: false, message: "Internal server error" });
   }
 };
+
+exports.getMe = catchAsync(async (req, res, next) => {
+  const user = await User.findById(req.user._id)
+    .populate("friends", "name profileImage")
+    .populate("friendRequests", "name profileImage");
+
+  if (!user) return next(new AppError("No user found", 404));
+
+  res.status(200).json({
+    status: true,
+    message: "success",
+    data: {
+      user,
+    },
+  });
+});
