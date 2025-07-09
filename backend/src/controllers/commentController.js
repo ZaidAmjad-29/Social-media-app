@@ -2,8 +2,10 @@ const Comment = require("../models/commentsModel");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 const Post = require("../models/postModel");
+const socket = require("../socket");
 
 exports.addComment = catchAsync(async (req, res, next) => {
+  const io = socket.getIO();
   const postId = req.params.postId;
   const text = req.body.text;
   const author = req.user._id;
@@ -22,6 +24,11 @@ exports.addComment = catchAsync(async (req, res, next) => {
   post.comments.push(newComment._id);
   console.log(post);
   await post.save();
+
+  io.emit("newComment", {
+    comment: newComment,
+    message: "Got a new comment on your post",
+  });
 
   res.status(201).json({
     status: true,

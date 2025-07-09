@@ -2,8 +2,10 @@ const User = require("../models/userModel");
 const catchAsync = require("../utils/catchAsync");
 const Post = require("../models/postModel");
 const AppError = require("../utils/appError");
+const socket = require("../socket");
 
 exports.createPost = catchAsync(async (req, res, next) => {
+  const io = socket.getIO();
   const content = req.body.content;
   const author = req.user._id;
   let imagePath = "";
@@ -12,6 +14,11 @@ exports.createPost = catchAsync(async (req, res, next) => {
     imagePath = `/public/images/${req.file.filename}`;
   }
   const post = await Post.create({ content, author, imageUrl: imagePath });
+
+  io.emit("newPost", {
+    post,
+    message: "New post created",
+  });
 
   res.status(201).json({
     status: true,

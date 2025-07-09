@@ -1,18 +1,20 @@
 const User = require("../models/userModel");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
+const socket = require("../socket");
 
 exports.sendFriendRequest = catchAsync(async (req, res, next) => {
+  const io = socket.getIO();
   const targetUser = await User.findById(req.params.userId);
   if (!targetUser) {
     return next(new AppError("User not found", 404));
   }
-  // if (targetUser.friends.includes(req.user._id)) {
-  //   return next(new AppError("You are already friends", 400));
-  // }
-  // if (targetUser.friendRequests.includes(req.user._id)) {
-  //   return next(new AppError("Friend request already sent", 400));
-  // }
+  if (targetUser.friends.includes(req.user._id)) {
+    return next(new AppError("You are already friends", 400));
+  }
+  if (targetUser.friendRequests.includes(req.user._id)) {
+    return next(new AppError("Friend request already sent", 400));
+  }
   targetUser.friendRequests.push(req.user._id);
   await targetUser.save();
   await targetUser.populate("friendRequests", "name profileImage");
@@ -23,6 +25,11 @@ exports.sendFriendRequest = catchAsync(async (req, res, next) => {
   }
   currentUser.friendRequests.push(targetUser._id);
   await currentUser.save();
+
+  io.emit(`friendRequest:${targetUser._id}`, {
+    from: req.user._id,
+    message: "You received a new friend request!",
+  });
 
   res.status(201).json({
     status: true,
@@ -95,9 +102,9 @@ exports.removeFriend = catchAsync(async (req, res, next) => {
       user: targetUser,
     },
   });
-})
+});
 
-exports.rejectRequest = catchAsync(async(req, res, next) =>{
+exports.rejectRequest = catchAsync(async (req, res, next) => {
   const targetUser = await User.findById(req.params.userId);
   if (!targetUser) {
     return next(new AppError("User not found", 404));
@@ -108,7 +115,7 @@ exports.rejectRequest = catchAsync(async(req, res, next) =>{
 
   targetUser.friendRequests.pull(req.user._id);
   await targetUser.save();
-  
+
   const currentUser = await User.findById(req.user._id);
   if (!currentUser) {
     return next(new AppError("Current user not found", 404));
@@ -124,4 +131,4 @@ exports.rejectRequest = catchAsync(async(req, res, next) =>{
       user: targetUser,
     },
   });
-})
+});
