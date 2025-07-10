@@ -1,4 +1,3 @@
-const User = require("../models/userModel");
 const catchAsync = require("../utils/catchAsync");
 const Post = require("../models/postModel");
 const AppError = require("../utils/appError");
@@ -30,7 +29,7 @@ exports.createPost = catchAsync(async (req, res, next) => {
 });
 
 exports.getAllPosts = catchAsync(async (req, res, next) => {
-  const posts = await Post.find()
+  const posts = await Post.find({})
     .populate("author", "name profileImage")
     .populate("likes", "name profileImage")
     .populate("comments", "text author")
