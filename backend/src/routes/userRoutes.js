@@ -1,7 +1,6 @@
 const express = require("express");
 const jwtFilter = require("../middlewares/requestFilter");
 
-
 const {
   register,
   login,
@@ -10,11 +9,10 @@ const {
   resetPassword,
   updatePassword,
   getMe,
+  updateUser
 } = require("../controllers/authController");
+const upload = require("../utils/userMulter");
 
-const upload = require("../utils/multer");
-
-// variable initializations
 const router = express.Router();
 
 router.route("/users").get(jwtFilter.checkRequest, getAllUsers);
@@ -32,5 +30,6 @@ router
   .patch(jwtFilter.checkRequest, updatePassword);
 
 router.get("/user/me", jwtFilter.checkRequest, getMe);
+router.patch("/user/me", jwtFilter.checkRequest, upload.single("profileImage"), updateUser)
 
 module.exports = router;

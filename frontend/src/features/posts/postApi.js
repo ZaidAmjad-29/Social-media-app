@@ -5,7 +5,6 @@ export const postApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: "http://localhost:3000/api/v1",
     tagTypes: ["Posts"],
-
     prepareHeaders: (headers, { getState }) => {
       const token = getState().auth.token;
       if (token) {
@@ -26,6 +25,7 @@ export const postApi = createApi({
         method: "POST",
         body: data,
       }),
+      invalidatesTags: ["Posts"],
     }),
 
     deletePost: builder.mutation({
@@ -41,6 +41,29 @@ export const postApi = createApi({
       }),
       invalidatesTags: ["Posts"],
     }),
+    addComment: builder.mutation({
+      query: ({ postId, comment }) => ({
+        url: `/comments/${postId}`,
+        method: "POST",
+        body: { text: comment },
+      }),
+    }),
+    deleteComment: builder.mutation({
+      query: ({ postId, commentId }) => ({
+        url: `/comments/${commentId}`,
+        method: "DELETE",
+      }),
+    }),
+    getComments: builder.query({
+      query: (postId) => `/comments/${postId}`,
+    }),
+    likeAndUnlikeComment: builder.mutation({
+      query: (commentId) => ({
+        url: `/comments/like/${commentId}`,
+        method: "POST",
+      }),
+      invalidatesTags: ["Posts"],
+    }),
   }),
 });
 
@@ -49,4 +72,8 @@ export const {
   useCreatePostMutation,
   useDeletePostMutation,
   useLikeAndUnlikePostMutation,
+  useAddCommentMutation,
+  useDeleteCommentMutation,
+  useGetCommentsQuery,
+  useLikeAndUnlikeCommentMutation,
 } = postApi;

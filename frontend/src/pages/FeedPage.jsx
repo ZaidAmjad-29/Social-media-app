@@ -5,14 +5,17 @@ import {
   useDeletePostMutation,
 } from "../features/posts/postApi";
 import { useSelector } from "react-redux";
+import Modal from "../components/Modal";
+import CommentsSection from "../components/CommentsSection";
 
 export default function FeedPage() {
   const { data, isLoading, isError } = useGetPostsQuery();
   const [likeAndUnlikePost] = useLikeAndUnlikePostMutation();
   const [deletePost] = useDeletePostMutation();
-  const userId = useSelector((state) => state.auth.user?._id);
 
   const [localPosts, setLocalPosts] = useState([]);
+  const [selectedPostId, setSelectedPostId] = useState(null);
+  const userId = useSelector((state) => state.auth.user?._id);
 
   useEffect(() => {
     if (data?.data?.posts) {
@@ -24,7 +27,6 @@ export default function FeedPage() {
   if (isError) return <p>Failed to load posts.</p>;
 
   const handleDeletePost = async (postId) => {
-    
     setLocalPosts((prev) => prev.filter((post) => post._id !== postId));
 
     try {
@@ -60,7 +62,7 @@ export default function FeedPage() {
 
   return (
     <div>
-      <h2>Feed</h2>
+ 
       {localPosts.map((post) => (
         <div
           key={post._id}
@@ -92,6 +94,14 @@ export default function FeedPage() {
           <button onClick={() => handleDeletePost(post._id)}>
             Delete Post
           </button>
+          <button onClick={() => setSelectedPostId(post._id)}>
+            Show Comments
+          </button>
+          {selectedPostId && (
+            <Modal onClose={() => setSelectedPostId(null)}>
+              <CommentsSection postId={selectedPostId} />
+            </Modal>
+          )}
         </div>
       ))}
     </div>

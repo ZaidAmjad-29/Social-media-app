@@ -218,3 +218,25 @@ exports.getMe = catchAsync(async (req, res, next) => {
     },
   });
 });
+
+exports.updateUser = catchAsync(async (req, res, next) => {
+  const userId = req.user._id;
+
+  const updateData = {
+    name: req.body.name,
+    bio: req.body.bio,
+  };
+
+  if (req.file) {
+    updateData.profileImage = "/public/user/" + req.file.filename; 
+  }
+
+  const updatedUser = await User.findByIdAndUpdate(userId, updateData, {
+    new: true,
+  });
+
+  res.status(200).json({
+    status: "success",
+    data: updatedUser,
+  });
+});
