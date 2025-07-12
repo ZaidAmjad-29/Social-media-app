@@ -7,6 +7,8 @@ import Protected from "./components/Protected";
 import AppLayout from "./components/AppLayout";
 import CreatePost from "./pages/CreatePost";
 import ProfilePage from "./pages/profilePage";
+import FriendsPage from "./pages/SendReqPage";
+import RequestsPage from "./pages/RequestsPage";
 import { BrowserRouter, Routes, Route } from "react-router";
 
 export default function App() {
@@ -39,6 +41,22 @@ export default function App() {
             element={
               <Protected>
                 <ProfilePage />
+              </Protected>
+            }
+          />
+          <Route
+            path="/friends"
+            element={
+              <Protected>
+                <FriendsPage />
+              </Protected>
+            }
+          />
+          <Route
+            path="/requests"
+            element={
+              <Protected>
+                <RequestsPage />
               </Protected>
             }
           />

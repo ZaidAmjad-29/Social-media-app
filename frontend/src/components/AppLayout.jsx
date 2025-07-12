@@ -8,6 +8,8 @@ export default function AppLayout() {
           <Link to="/feed">Feed</Link>
           <Link to="/create-post">Create</Link>
           <Link to="/profile">Profile</Link>
+          <Link to="/friends">Friends</Link>
+          <Link to="/requests">Requests</Link>
         </nav>
       </header>
       <main>
