@@ -1,21 +1,21 @@
+// routes/friendsRoutes.js
 const express = require("express");
+const router = express.Router();
 const jwtFilter = require("../middlewares/requestFilter");
 const {
-  sendFriendRequest,
-  acceptFriendRequest,
-  removeFriend,
+  sendRequest,
+  acceptRequest,
   rejectRequest,
+  removeFriend,
+  getMe,
+  getAllUsers,
 } = require("../controllers/friendsController");
 
-const router = express.Router();
+router.get("/me", jwtFilter.checkRequest, getMe);
+router.get("/users", jwtFilter.checkRequest, getAllUsers);
+router.post("/send-request", jwtFilter.checkRequest, sendRequest);
+router.post("/accept-request", jwtFilter.checkRequest, acceptRequest);
+router.post("/reject-request", jwtFilter.checkRequest, rejectRequest);
+router.delete("/remove-friend/:friendId", jwtFilter.checkRequest, removeFriend);
 
-router.post("/send-request/:userId", jwtFilter.checkRequest, sendFriendRequest);
-router.post(
-  "/accept-request/:userId",
-  jwtFilter.checkRequest,
-  acceptFriendRequest
-);
-router.delete("/cancel-request/:userId", jwtFilter.checkRequest, rejectRequest);
-
-router.delete("/remove-friend/:userId", jwtFilter.checkRequest, removeFriend);
 module.exports = router;

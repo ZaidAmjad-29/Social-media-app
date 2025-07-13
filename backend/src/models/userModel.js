@@ -32,7 +32,7 @@ const userSchema = new mongoose.Schema(
     },
     friends: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     friendRequests: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
-    friendRequestsSent: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    // friendRequestsSent: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
 
     passwordChangedAt: Date,
     passwordResetToken: String,

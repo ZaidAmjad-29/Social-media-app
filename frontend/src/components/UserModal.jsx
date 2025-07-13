@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { X } from "lucide-react";
 
 export default function UserModal({ isOpen, onClose, userData, onSave }) {
   const [name, setName] = useState("");
@@ -31,69 +32,64 @@ export default function UserModal({ isOpen, onClose, userData, onSave }) {
   if (!isOpen) return null;
 
   return (
-    <div
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: "rgba(0,0,0,0.5)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        zIndex: 1000,
-      }}
-    >
-      <div
-        style={{
-          backgroundColor: "white",
-          padding: "20px",
-          borderRadius: "8px",
-          width: "400px",
-          maxWidth: "90%",
-        }}
-      >
-        <h3>Edit Profile</h3>
-        <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: "10px" }}>
-            <label>Name:</label>
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-md relative">
+        <button
+          onClick={onClose}
+          className="absolute top-3 right-3 text-gray-500 hover:text-gray-700 transition"
+        >
+          <X className="h-5 w-5" />
+        </button>
+        <h3 className="text-xl font-semibold text-gray-900 mb-4">Edit Profile</h3>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              style={{ width: "100%", padding: "5px" }}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 transition"
             />
           </div>
-          <div style={{ marginBottom: "10px" }}>
-            <label>Bio:</label>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Bio</label>
             <textarea
               value={bio}
               onChange={(e) => setBio(e.target.value)}
-              style={{ width: "100%", padding: "5px" }}
+              rows={3}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 transition"
             />
           </div>
-          <div style={{ marginBottom: "10px" }}>
-            <label>Profile Image:</label>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Profile Image</label>
             <input
               type="file"
               accept="image/*"
               onChange={handleFileChange}
-              style={{ width: "100%", padding: "5px" }}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 transition"
             />
             {previewUrl && (
               <img
-                src={previewUrl}
+                src={previewUrl.startsWith("http") ? previewUrl : `http://localhost:3000${previewUrl}`}
                 alt="Preview"
-                style={{ marginTop: "10px", width: "100px", borderRadius: "8px" }}
+                className="mt-3 w-24 h-24 rounded-lg object-cover"
               />
             )}
           </div>
-          <div style={{ display: "flex", justifyContent: "flex-end" }}>
-            <button type="button" onClick={onClose} style={{ marginRight: "10px" }}>
+          <div className="flex justify-end space-x-2 pt-2">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
+            >
               Cancel
             </button>
-            <button type="submit">Save</button>
+            <button
+              type="submit"
+              className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
+            >
+              Save
+            </button>
           </div>
         </form>
       </div>

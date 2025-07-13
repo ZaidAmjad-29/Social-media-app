@@ -3,61 +3,62 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const friendsApi = createApi({
   reducerPath: "friendsApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:3000/api/v1",
+    baseUrl: "http://localhost:3000/api/v1/",
     prepareHeaders: (headers, { getState }) => {
-      const token = getState().auth.token;
-      if (token) {
-        headers.set("Authorization", `Bearer ${token}`);
-      }
+      const token = localStorage.getItem("token");
+      if (token) headers.set("Authorization", `Bearer ${token}`);
       return headers;
     },
   }),
-  tagTypes: ["Users", "Me"],
+  tagTypes: ["Friends"],
   endpoints: (builder) => ({
-    getAllUsers: builder.query({
-      query: () => "/users",
-      providesTags: ["Users"],
-    }),
     getMe: builder.query({
-      query: () => "/user/me",
-      providesTags: ["Me"],
+      query: () => "me",
+      providesTags: ["Friends"],
+    }),
+    getAllUsers: builder.query({
+      query: () => "users",
+      providesTags: ["Friends"],
     }),
     sendRequest: builder.mutation({
-      query: (userId) => ({
-        url: `/send-request/${userId}`,
+      query: (userIdTo) => ({
+        url: "send-request",
         method: "POST",
+        body: { userIdTo },
       }),
-      invalidatesTags: ["Me"],
+      invalidatesTags: ["Friends"],
     }),
     acceptRequest: builder.mutation({
-      query: (userId) => ({
-        url: `/accept-request/${userId}`,
+      query: (userIdFrom) => ({
+        url: "accept-request",
         method: "POST",
+        body: { userIdFrom },
       }),
-      invalidatesTags: ["Me"],
+      invalidatesTags: ["Friends"],
     }),
-    cancelRequest: builder.mutation({
-      query: (userId) => ({
-        url: `/cancel-request/${userId}`,
-        method: "DELETE",
+    rejectRequest: builder.mutation({
+      query: (userIdFrom) => ({
+        url: "reject-request",
+        method: "POST",
+        body: { userIdFrom },
       }),
-      invalidatesTags: ["Me"],
+      invalidatesTags: ["Friends"],
     }),
     removeFriend: builder.mutation({
-      query: (userId) => ({
-        url: `/remove-friend/${userId}`,
+      query: (friendId) => ({
+        url: `remove-friend/${friendId}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["Me"],
+      invalidatesTags: ["User"],
     }),
   }),
 });
 
 export const {
-  useGetAllUsersQuery,
   useGetMeQuery,
+  useGetAllUsersQuery,
   useSendRequestMutation,
   useAcceptRequestMutation,
-  useCancelRequestMutation,
+  useRejectRequestMutation,
   useRemoveFriendMutation,
 } = friendsApi;

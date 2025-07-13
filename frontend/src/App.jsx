@@ -7,7 +7,7 @@ import Protected from "./components/Protected";
 import AppLayout from "./components/AppLayout";
 import CreatePost from "./pages/CreatePost";
 import ProfilePage from "./pages/profilePage";
-import FriendsPage from "./pages/SendReqPage";
+import FriendsPage from "./pages/FriendsPage";
 import RequestsPage from "./pages/RequestsPage";
 import { BrowserRouter, Routes, Route } from "react-router";
 
